@@ -1,12 +1,16 @@
 import DraggableItem from './components/DraggableItem';
+import DraggableImage from './components/DraggableImage';
 import DroppableTarget from './components/DroppableTarget';
-import DroppableTargetDisabled from './components/DroppableTargetDisabled';
+
 // App.js
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { Container, List, Typography, Box } from '@mui/material';
+import { Container, List, Typography, Box, ImageListItem, ImageList} from '@mui/material';
 import Button from '@mui/material/Button';
+
+import DrosophilaFemale from './assets/drosophila/FeMale.png'
+import DrosophilaMale from './assets/drosophila/Male.png'
 
 const initialItems = [
   { id: 1, text: 'Male A1', type: 'Male' },
@@ -21,6 +25,8 @@ const App = () => {
   const [items, setItems] = useState(initialItems);
   const [droppedItemsA, setDroppedItemsA] = useState([]);
   const [droppedItemsB, setDroppedItemsB] = useState([]);
+  const [activeBox, setActiveBox] = useState(null);
+  const [activeItemId, setActiveItemId] = useState(null);
 
   const resetItems = () => {
     setItems(initialItems);
@@ -28,20 +34,22 @@ const App = () => {
     setDroppedItemsB([]);
   };
 
-  const handleDrop = (boxName, itemId) => {
-    console.log(`==================`);
-    console.log(droppedItemsA.length);
-    console.log(`==================`);
-    const droppedItem = items.find((item) => item.id === itemId);
-    setItems((prevItems) => prevItems.filter((item) => item.id !== itemId));
-    if (boxName === 'Female' && droppedItemsA.length < 1) {
+  useEffect(() => {
+    const droppedItem = items.find((item) => item.id === activeItemId);
+    if (activeBox === 'Female' && droppedItemsA.length < 1) {
+      setItems((prevItems) => prevItems.filter((item) => item.id !== activeItemId));
       setDroppedItemsA((prevItems) => [...prevItems, droppedItem]);
-    } else if (boxName === 'Male' && droppedItemsB.length < 1) {
+    } else if (activeBox === 'Male' && droppedItemsB.length < 1) {
+      setItems((prevItems) => prevItems.filter((item) => item.id !== activeItemId));
       setDroppedItemsB((prevItems) => [...prevItems, droppedItem]);
-    } else {
-      setItems((prevItems) => [...prevItems, droppedItem]);
     }
-  };
+  }, [activeBox, activeItemId])
+
+  const handleDrop = useCallback((boxName, itemId) => {
+    
+    setActiveBox(boxName);
+    setActiveItemId(itemId);
+  }, []);
 
   return (
     <>
@@ -50,56 +58,23 @@ const App = () => {
           <Typography variant="h4" gutterBottom>
             React DND with Material-UI
           </Typography>
-
           <Box display="flex" justifyContent="space-between" mb={2}>
-                <DroppableTarget
-                  boxName="Drop Male Here"
-                  acceptedTypes={['Male']}
-                  onDrop={(itemId) => {
-                    handleDrop('Male', itemId)
-                  }}
-                  droppedItems={droppedItemsB}
-                />
-                <DroppableTarget
-                  boxName="Drop Female Here"
-                  acceptedTypes={['Female']}
-                  onDrop={(itemId) => {
-                    handleDrop('Female', itemId)
-                  }}
-                  droppedItems={droppedItemsA}
-                />
-            {/* { 
-              droppedItemsB.length < 1 ?
-                <DroppableTarget
-                  boxName="Drop Male Here"
-                  acceptedTypes={['Male']}
-                  onDrop={(itemId) => {
-                    handleDrop('Male', itemId)
-                  }}
-                  droppedItems={droppedItemsB}
-                />
-              :
-                <DroppableTargetDisabled
-                  boxName="Drop Male Here AA"
-                  droppedItems={droppedItemsB}
-                />
-            }
-            {
-              droppedItemsA.length < 1 ?
-                <DroppableTarget
-                  boxName="Drop Female Here"
-                  acceptedTypes={['Female']}
-                  onDrop={(itemId) => {
-                    handleDrop('Female', itemId)
-                  }}
-                  droppedItems={droppedItemsA}
-                />
-                :
-                <DroppableTargetDisabled
-                  boxName="Drop Male Here AA"
-                  droppedItems={droppedItemsA}
-                />
-            } */}
+            <DroppableTarget
+              boxName="Drop Male Here"
+              acceptedTypes={['Male']}
+              onDrop={(itemId) => {
+                handleDrop('Male', itemId)
+              }}
+              droppedItems={droppedItemsB}
+            />
+            <DroppableTarget
+              boxName="Drop Female Here"
+              acceptedTypes={['Female']}
+              onDrop={(itemId) => {
+                handleDrop('Female', itemId)
+              }}
+              droppedItems={droppedItemsA}
+            />
           </Box>
 
           <Box mb={2} display="flex" justifyContent="end">
@@ -109,18 +84,29 @@ const App = () => {
           </Box>
 
           <List>
-            {items.map((item) => (
+            {/* {items.map((item) => (
               <DraggableItem
                 key={item.id}
                 id={item.id}
                 text={item.text}
                 type={item.type}
               />
-            ))}
+            ))} */}
+            <ImageList sx={{ height: 100 }} cols={5}>
+              {items.map((item) => (
+                <DraggableImage
+                  key={item.id}
+                  id={item.id}
+                  text={item.text}
+                  type={item.type}
+                />
+              ))}
+            </ImageList>
           </List>
+
         </Container>
       </DndProvider>
-      <>
+      {/* <>
         <p>Status Variable</p>
         <p>items: {JSON.stringify(items)}</p>
         <p>items Lenght: {items.length}</p>
@@ -128,7 +114,7 @@ const App = () => {
         <p>items Lenght: {droppedItemsA.length}</p>
         <p>droppedItemsB: {JSON.stringify(droppedItemsB)}</p>
         <p>items Lenght: {droppedItemsB.length}</p>
-      </>
+      </> */}
     </>
   );
 };
