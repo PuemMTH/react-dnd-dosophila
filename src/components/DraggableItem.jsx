@@ -3,9 +3,9 @@ import React from 'react';
 import { useDrag } from 'react-dnd';
 import { ListItem, ListItemText } from '@mui/material';
 
-const DraggableItem = ({ id, text }) => {
+const DraggableItem = ({ id, text, type }) => {
   const [{ isDragging }, drag] = useDrag(() => ({
-    type: 'item',
+    type: type,
     item: { id },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),

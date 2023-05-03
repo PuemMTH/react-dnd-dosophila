@@ -1,20 +1,24 @@
+// DroppableTarget.js
 import React from 'react';
 import { useDrop } from 'react-dnd';
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, List, ListItem, ListItemText } from '@mui/material';
 
-const DroppableTarget = ({ boxName, onDrop, canDrop, itemText }) => {
-  const [{ isOver }, drop] = useDrop(() => ({
-    accept: 'item',
-    drop: (item) => {
-      if (canDrop) {
-        onDrop(item.id);
-      }
-    },
+const DroppableTarget = ({ boxName, acceptedTypes, onDrop, droppedItems }) => {
+  const [{ isOver, canDrop }, drop] = useDrop(() => ({
+    accept: acceptedTypes,
+    drop: (item) => onDrop(item.id),
+    canDrop: () => droppedItems.length === 0,
     collect: (monitor) => ({
-        isOver: monitor.isOver(),
+      isOver: monitor.isOver(),
+      canDrop: monitor.canDrop(),
     }),
-    canDrop: () => canDrop,
   }));
+
+  const backgroundColor = canDrop
+    ? isOver
+      ? 'lightblue'
+      : 'lightgreen'
+    : 'lightgray';
 
   return (
     <Box
@@ -22,7 +26,7 @@ const DroppableTarget = ({ boxName, onDrop, canDrop, itemText }) => {
       sx={{
         width: 200,
         height: 200,
-        backgroundColor: isOver ? 'lightblue' : 'lightgray',
+        backgroundColor: backgroundColor,
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
@@ -32,17 +36,15 @@ const DroppableTarget = ({ boxName, onDrop, canDrop, itemText }) => {
       }}
     >
       <Typography variant="h6">{boxName}</Typography>
-      {canDrop ? (
-        itemText ? (
-          <Typography>{itemText}</Typography>
-        ) : (
-          <Typography>Drop here</Typography>
-        )
-      ) : (
-        <Typography>{itemText}</Typography>
-      )}
+      <Typography>Drop here</Typography>
+      <List>
+        {droppedItems.map((item) => (
+          <ListItem key={item.id} dense>
+            <ListItemText primary={item.text} />
+          </ListItem>
+        ))}
+      </List>
     </Box>
   );
 };
-
 export default DroppableTarget;
