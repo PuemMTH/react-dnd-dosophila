@@ -3,30 +3,20 @@ import React from 'react';
 import { useDrop } from 'react-dnd';
 import { Box, Typography, List, ListItem, ListItemText } from '@mui/material';
 
-const DroppableTarget = ({ boxName, acceptedTypes, onDrop, droppedItems }) => {
-  const [{ isOver, canDrop }, drop] = useDrop(() => ({
-    accept: acceptedTypes,
-    drop: (item) => onDrop(item.id),
-    canDrop: () => droppedItems.length < 1,
-    collect: (monitor) => ({
-      isOver: monitor.isOver(),
-      canDrop: monitor.canDrop(),
-    }),
-  }));
+const DroppableTarget = ({ boxName, droppedItems }) => {
 
-  const backgroundColor = canDrop
-    ? isOver
-      ? 'lightblue'
-      : 'lightgreen'
-    : 'lightgray';
+  // const backgroundColor = canDrop
+  //   ? isOver
+  //     ? 'lightblue'
+  //     : 'lightgreen'
+  //   : 'lightgray';
 
   return (
     <Box
-      ref={drop}
       sx={{
         width: 200,
         height: 200,
-        backgroundColor: backgroundColor,
+        backgroundColor: 'lightgray',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',

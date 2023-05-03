@@ -1,7 +1,8 @@
 import DraggableItem from './components/DraggableItem';
 import DroppableTarget from './components/DroppableTarget';
+import DroppableTargetDisabled from './components/DroppableTargetDisabled';
 // App.js
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { Container, List, Typography, Box } from '@mui/material';
@@ -28,6 +29,9 @@ const App = () => {
   };
 
   const handleDrop = (boxName, itemId) => {
+    console.log(`==================`);
+    console.log(droppedItemsA.length);
+    console.log(`==================`);
     const droppedItem = items.find((item) => item.id === itemId);
     setItems((prevItems) => prevItems.filter((item) => item.id !== itemId));
     if (boxName === 'Female' && droppedItemsA.length < 1) {
@@ -48,28 +52,54 @@ const App = () => {
           </Typography>
 
           <Box display="flex" justifyContent="space-between" mb={2}>
-            <DroppableTarget
-              boxName="Drop Female Here"
-              acceptedTypes={['Female']}
-              onDrop={(itemId) => {
-                if (droppedItemsA.length < 1) {
-                  console.log('droppedItemsA: ', droppedItemsA.length);
-                  handleDrop('Female', itemId);
-                }
-              }}
-              droppedItems={droppedItemsA}
-            />
-            <DroppableTarget
-              boxName="Drop Male Here"
-              acceptedTypes={['Male']}
-              onDrop={(itemId) => {
-                if (droppedItemsB.length < 1) {
-                  console.log('droppedItemsB: ', droppedItemsB.length);
-                  handleDrop('Male', itemId);
-                }
-              }}
-              droppedItems={droppedItemsB}
-            />
+                <DroppableTarget
+                  boxName="Drop Male Here"
+                  acceptedTypes={['Male']}
+                  onDrop={(itemId) => {
+                    handleDrop('Male', itemId)
+                  }}
+                  droppedItems={droppedItemsB}
+                />
+                <DroppableTarget
+                  boxName="Drop Female Here"
+                  acceptedTypes={['Female']}
+                  onDrop={(itemId) => {
+                    handleDrop('Female', itemId)
+                  }}
+                  droppedItems={droppedItemsA}
+                />
+            {/* { 
+              droppedItemsB.length < 1 ?
+                <DroppableTarget
+                  boxName="Drop Male Here"
+                  acceptedTypes={['Male']}
+                  onDrop={(itemId) => {
+                    handleDrop('Male', itemId)
+                  }}
+                  droppedItems={droppedItemsB}
+                />
+              :
+                <DroppableTargetDisabled
+                  boxName="Drop Male Here AA"
+                  droppedItems={droppedItemsB}
+                />
+            }
+            {
+              droppedItemsA.length < 1 ?
+                <DroppableTarget
+                  boxName="Drop Female Here"
+                  acceptedTypes={['Female']}
+                  onDrop={(itemId) => {
+                    handleDrop('Female', itemId)
+                  }}
+                  droppedItems={droppedItemsA}
+                />
+                :
+                <DroppableTargetDisabled
+                  boxName="Drop Male Here AA"
+                  droppedItems={droppedItemsA}
+                />
+            } */}
           </Box>
 
           <Box mb={2} display="flex" justifyContent="end">
@@ -93,8 +123,11 @@ const App = () => {
       <>
         <p>Status Variable</p>
         <p>items: {JSON.stringify(items)}</p>
+        <p>items Lenght: {items.length}</p>
         <p>droppedItemsA: {JSON.stringify(droppedItemsA)}</p>
+        <p>items Lenght: {droppedItemsA.length}</p>
         <p>droppedItemsB: {JSON.stringify(droppedItemsB)}</p>
+        <p>items Lenght: {droppedItemsB.length}</p>
       </>
     </>
   );
